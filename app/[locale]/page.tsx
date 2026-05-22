@@ -114,7 +114,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           {/* Category Filter */}
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+          <div className="flex flex-wrap gap-2 pb-2 md:pb-0">
             {categories.map((cat) => (
               <button
                 key={cat.id}

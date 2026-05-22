@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import Image from "next/image";
 import { Globe, User, LogIn } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 export default function TopHeader() {
   const t = useTranslations("Navigation");
@@ -89,6 +90,7 @@ export default function TopHeader() {
 
         {/* Actions Section */}
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <button
             onClick={toggleLanguage}
             className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
