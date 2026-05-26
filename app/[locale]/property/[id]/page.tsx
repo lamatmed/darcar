@@ -10,6 +10,7 @@ import { MapPin, Bed, Bath, Maximize, MessageCircle, Heart } from "lucide-react"
 import PropertyHeaderActions from "@/components/property/PropertyHeaderActions";
 import PropertyGallery from "@/components/property/PropertyGallery";
 import PropertySkeleton from "@/components/property/PropertySkeleton";
+import { useFavorite } from "@/lib/useFavorite";
 
 interface Property {
   id: string;
@@ -29,6 +30,7 @@ interface Property {
   announcementDate?: string;
   dossierType?: string;
   resource?: string;
+  whatsapp?: string | null;
 }
 
 export default function PropertyPage() {
@@ -41,6 +43,7 @@ export default function PropertyPage() {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { isFav, toggle } = useFavorite("fav_properties", property);
 
   useEffect(() => {
     let cancelled = false;
@@ -140,8 +143,8 @@ export default function PropertyPage() {
                   {formattedPrice} <span className="text-blue-600 text-xl">{t("price_suffix")}</span>
                 </h1>
               </div>
-              <button className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors mt-8">
-                <Heart className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <button type="button" onClick={toggle} className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors mt-8">
+                <Heart className={`w-5 h-5 ${isFav ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-300"}`} />
               </button>
             </div>
             
@@ -228,19 +231,21 @@ export default function PropertyPage() {
               {formattedPrice} {t("price_suffix")}
             </p>
           </div>
-          <a
-            href={`https://wa.me/22247095877?text=${encodeURIComponent(
-              locale === "ar" 
-                ? `مرحباً، أنا مهتم بهذا العقار: ${location} (${property.id})`
-                : `Bonjour, je suis intéressé par ce bien : ${location} (${property.id})`
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg flex justify-center items-center gap-2 transition-transform active:scale-95 text-center"
-          >
-            <MessageCircle className="w-5 h-5 fill-current" />
-            {t("contact_agent")}
-          </a>
+          {property.whatsapp ? (
+            <a
+              href={`https://wa.me/${property.whatsapp}?text=${encodeURIComponent(
+                locale === "ar"
+                  ? `السلام عليكم 👋\nأنا مهتم بهذا العقار:\n🏠 ${location}\n💰 ${formattedPrice} أوقية\n\nهل هو متاح؟`
+                  : `Bonjour 👋\nJe suis intéressé par ce bien :\n🏠 ${location}\n💰 ${formattedPrice} MRU\n\nEst-il toujours disponible ?`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg flex justify-center items-center gap-2 transition-transform active:scale-95 text-center"
+            >
+              <MessageCircle className="w-5 h-5 fill-current" />
+              {t("contact_agent")}
+            </a>
+          ) : null}
         </div>
       </div>
     </div>

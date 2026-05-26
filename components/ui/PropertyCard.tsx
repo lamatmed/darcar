@@ -27,7 +27,6 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   const t = useTranslations("Property");
   const c = useTranslations("Categories");
   const locale = useLocale();
-
   // Mapping internal type to translation keys
   const typeMapping: Record<string, string> = {
     HOUSE: "houses",
@@ -61,14 +60,14 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          {property.featured && (
-            <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
-              {locale === "ar" ? "مميز" : "Featured"}
-            </div>
-          )}
           <div className={`absolute top-3 left-3 ${property.transactionType === 'FOR_RENT' ? 'bg-emerald-500' : 'bg-orange-500'} text-white text-[10px] font-black px-2 py-1 rounded-lg shadow-lg uppercase tracking-tighter z-10`}>
             {c(property.transactionType as any)}
           </div>
+          {property.featured && (
+            <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
+              ⭐ {locale === "ar" ? "مميز" : "À la une"}
+            </div>
+          )}
         </div>
 
         {/* Content */}

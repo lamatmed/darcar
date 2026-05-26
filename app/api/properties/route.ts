@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       announcementDate,
       dossierType,
       resource,
+      whatsapp,
     } = body;
 
     // ✅ Validation forte
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
         announcementDate: announcementDate ? new Date(announcementDate) : undefined,
         dossierType,
         resource,
+        whatsapp: whatsapp || undefined,
         userId: session.id,
       } as any,
     });
@@ -109,7 +111,12 @@ export async function GET(req: Request) {
 
     const skip = (page - 1) * limit;
 
+    const featuredParam = searchParams.get("featured");
     const where: any = {};
+
+    if (featuredParam === "true") {
+      where.featured = true;
+    }
 
     // ✅ FIX ENUM (plus d’erreur TS)
     if (categoryParam && categoryParam !== "all") {
@@ -164,6 +171,7 @@ export async function GET(req: Request) {
         announcementDate: true,
         dossierType: true,
         resource: true,
+        whatsapp: true,
       } as any,
     });
 

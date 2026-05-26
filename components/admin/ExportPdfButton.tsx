@@ -85,7 +85,7 @@ export default function ExportPdfButton({
       // 1. Dynamically fetch font AND logo in parallel
       const [fontResponse, logoResponse] = await Promise.all([
         fetch("/fonts/Amiri-Regular.ttf"),
-        fetch("/log.jpg")
+        fetch("/logo.png")
       ]);
 
       if (!fontResponse.ok) throw new Error("Could not load Arabic font.");
@@ -129,7 +129,7 @@ export default function ExportPdfButton({
       }
 
       // Localized Company Name next to Logo
-      const companyName = isAr ? "الشركة الموريتانية للتسويق" : "La Mauritanienne du Marketing";
+      const companyName = isAr ? "داركار" : "DarCar";
       doc.setFontSize(14);
       doc.text(formatPdfText(companyName), logoBase64 ? 38 : 14, 18);
       doc.setFontSize(8);

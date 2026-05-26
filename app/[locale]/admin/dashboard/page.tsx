@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { LayoutDashboard, Building2, Users, Home, Building, Map, Landmark } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Home, Building, Map, Landmark, Car } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 
@@ -14,24 +14,34 @@ export default async function AdminDashboardPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Admin" });
+  const tCar = await getTranslations({ locale, namespace: "Cars" });
 
   const session = await getSession();
   if (!session || session.role !== "ADMIN") {
     redirect(`/${locale}/`);
   }
 
-  const [totalProperties, totalUsers, propertyStats] = await Promise.all([
+  const [totalProperties, totalUsers, propertyStats, totalCars, carStats] = await Promise.all([
     prisma.property.count(),
     prisma.user.count(),
     prisma.property.groupBy({
       by: ['type', 'transactionType'] as any,
-      _count: {
-        _all: true,
-      },
+      _count: { _all: true },
+    }),
+    (prisma.car as any).count(),
+    (prisma.car as any).groupBy({
+      by: ['type', 'transactionType'],
+      _count: { _all: true },
     }),
   ]);
 
   const statsMap = propertyStats.reduce((acc: any, curr) => {
+    const key = `${curr.type}_${curr.transactionType}`;
+    acc[key] = curr._count._all;
+    return acc;
+  }, {});
+
+  const carStatsMap = carStats.reduce((acc: any, curr: any) => {
     const key = `${curr.type}_${curr.transactionType}`;
     acc[key] = curr._count._all;
     return acc;
@@ -44,14 +54,32 @@ export default async function AdminDashboardPage({
     { id: "BUILDING", name: t("Category_BUILDING") || "Immeubles", icon: Landmark, color: "purple" },
   ];
 
+  const carCategoriesStats = [
+    { id: "SEDAN", name: tCar("sedan"), emoji: "🚗" },
+    { id: "SUV", name: tCar("suv"), emoji: "🚙" },
+    { id: "TRUCK", name: tCar("truck"), emoji: "🚛" },
+    { id: "VAN", name: tCar("van"), emoji: "🚐" },
+    { id: "COUPE", name: tCar("coupe"), emoji: "🏎️" },
+    { id: "CONVERTIBLE", name: tCar("convertible"), emoji: "🚘" },
+    { id: "OTHER", name: tCar("other"), emoji: "🚗" },
+  ];
+
   const cards = [
     {
-      title: t("properties_title") ?? "Annonces",
+      title: t("real_estate_title"),
       href: "/admin/properties",
       icon: Building2,
-      description: t("properties_desc") ?? "Créer, modifier, supprimer des annonces.",
+      description: t("real_estate_desc"),
       count: totalProperties,
       color: "blue",
+    },
+    {
+      title: t("cars_title"),
+      href: "/admin/cars",
+      icon: Car,
+      description: t("cars_desc"),
+      count: totalCars,
+      color: "orange",
     },
     {
       title: t("users_title") ?? "Utilisateurs",
@@ -117,44 +145,72 @@ export default async function AdminDashboardPage({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Immobilier */}
+      <div className="flex items-center gap-2 mb-4">
+        <Building2 className="w-5 h-5 text-blue-600" />
+        <h3 className="font-bold text-gray-700 dark:text-gray-300">{t("real_estate_title")}</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {categoriesStats.map((cat) => {
           const Icon = cat.icon;
           const sales = statsMap[`${cat.id}_FOR_SALE`] || 0;
           const rentals = statsMap[`${cat.id}_FOR_RENT`] || 0;
-
           return (
-            <div 
-              key={cat.id}
-              className="bg-white dark:bg-gray-800 rounded-3xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm"
-            >
+            <div key={cat.id} className="bg-white dark:bg-gray-800 rounded-3xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className={`w-10 h-10 rounded-xl bg-${cat.color}-50 dark:bg-${cat.color}-900/20 text-${cat.color}-600 dark:text-${cat.color}-400 flex items-center justify-center`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                <span className="font-bold text-gray-900 dark:text-white truncate">
-                  {cat.name}
-                </span>
+                <span className="font-bold text-gray-900 dark:text-white truncate text-sm">{cat.name}</span>
               </div>
-              
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400 font-medium">{t("sale")}</span>
-                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">
-                    {sales}
-                  </span>
+                  <span className="text-gray-500 font-medium">{t("sale")}</span>
+                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">{sales}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400 font-medium">{t("rent")}</span>
-                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">
-                    {rentals}
-                  </span>
+                  <span className="text-gray-500 font-medium">{t("rent")}</span>
+                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">{rentals}</span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-xs">
                   <span className="text-gray-400 uppercase tracking-tighter font-bold">{t("total")}</span>
-                  <span className="font-black text-blue-600 dark:text-blue-400">
-                    {sales + rentals}
-                  </span>
+                  <span className="font-black text-blue-600 dark:text-blue-400">{sales + rentals}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Stats Voitures */}
+      <div className="flex items-center gap-2 mb-4">
+        <Car className="w-5 h-5 text-orange-500" />
+        <h3 className="font-bold text-gray-700 dark:text-gray-300">{t("cars_title")}</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {carCategoriesStats.map((cat) => {
+          const sales = carStatsMap[`${cat.id}_FOR_SALE`] || 0;
+          const rentals = carStatsMap[`${cat.id}_FOR_RENT`] || 0;
+          return (
+            <div key={cat.id} className="bg-white dark:bg-gray-800 rounded-3xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-xl">
+                  {cat.emoji}
+                </div>
+                <span className="font-bold text-gray-900 dark:text-white truncate text-sm">{cat.name}</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-medium">{t("sale")}</span>
+                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">{sales}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-medium">{t("rent")}</span>
+                  <span className="font-black text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded-lg">{rentals}</span>
+                </div>
+                <div className="pt-2 mt-2 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between text-xs">
+                  <span className="text-gray-400 uppercase tracking-tighter font-bold">{t("total")}</span>
+                  <span className="font-black text-orange-500">{sales + rentals}</span>
                 </div>
               </div>
             </div>

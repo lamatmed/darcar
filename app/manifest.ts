@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "الشركة الموريتانية للتسويق - Marketing & Digital Solutions",
-    short_name: "RIM Marketing",
+    name: "داركار",
+    short_name: "داركار",
     description: "Agence de marketing digital en Mauritanie - Solutions créatives et stratégiques pour votre entreprise.",
     start_url: "/",
     display: "standalone",

@@ -14,12 +14,13 @@ enum Role {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  phone     String     @unique
-  name      String
-  password  String
-  role      Role       @default(USER)
+  id         String     @id @default(cuid())
+  phone      String     @unique
+  name       String
+  password   String
+  role       Role       @default(USER)
   properties Property[]
+  cars       Car[]
 }
 
 enum PropertyType {
@@ -27,6 +28,28 @@ enum PropertyType {
   APARTMENT
   LAND
   BUILDING
+}
+
+enum CarType {
+  SEDAN
+  SUV
+  TRUCK
+  VAN
+  COUPE
+  CONVERTIBLE
+  OTHER
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
 }
 
 enum TransactionType {
@@ -55,12 +78,48 @@ model Property {
   announcementDate DateTime?
   dossierType      String?
   resource         String?
-  
+  whatsapp         String?
+
   // Admin Relation
   userId      String
   author      User         @relation(fields: [userId], references: [id])
-  @@index([type])          // 🔥 filtre category rapide
-  @@index([transactionType]) // 🔥 filtre vente/location rapide
-  @@index([location])      // 🔥 search rapide
-  @@index([createdAt])     // 🔥 pagination rapide
+  @@index([type])
+  @@index([transactionType])
+  @@index([location])
+  @@index([createdAt])
+}
+
+model Car {
+  id              String           @id @default(cuid())
+  type            CarType
+  transactionType TransactionType  @default(FOR_SALE)
+  price           Float
+  location        String
+  locationAr      String
+  brand           String
+  carModel        String
+  year            Int
+  mileage         Int?
+  fuel            FuelType
+  transmission    TransmissionType @default(AUTOMATIC)
+  color           String?
+  image           String
+  images          String[]
+  featured        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  announcementDate DateTime?
+  dossierType      String?
+  resource         String?
+  whatsapp         String?
+
+  userId  String
+  author  User   @relation(fields: [userId], references: [id])
+
+  @@index([type])
+  @@index([transactionType])
+  @@index([location])
+  @@index([createdAt])
+  @@index([brand])
 }

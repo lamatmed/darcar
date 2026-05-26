@@ -44,6 +44,7 @@ export default async function AdminEditPropertyPage({
             announcementDate: property.announcementDate,
             dossierType: property.dossierType,
             resource: property.resource,
+            whatsapp: property.whatsapp,
           }}
         />
       </div>

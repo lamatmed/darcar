@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { Home, Building2, Heart, User, LogIn } from "lucide-react";
+import { Home, Grid2X2, Star, User, LogIn } from "lucide-react";
 
 export default function BottomNavigation() {
   const t = useTranslations("Navigation");
@@ -14,33 +14,24 @@ export default function BottomNavigation() {
 
   useEffect(() => {
     const controller = new AbortController();
-
     const fetchUser = () => {
       fetch("/api/auth/me", { cache: "no-store", signal: controller.signal })
         .then((res) => res.json())
         .then((data) => setUser(data.user || null))
-        .catch((err) => {
-          if (err?.name !== "AbortError") setUser(null);
-        });
+        .catch((err) => { if (err?.name !== "AbortError") setUser(null); });
     };
-
     fetchUser();
-
     const onAuthChanged = () => fetchUser();
     window.addEventListener("auth-changed", onAuthChanged);
-
-    return () => {
-      controller.abort();
-      window.removeEventListener("auth-changed", onAuthChanged);
-    };
+    return () => { controller.abort(); window.removeEventListener("auth-changed", onAuthChanged); };
   }, [pathname]);
 
   const navItems = [
     { name: t("home"), href: "/", icon: Home },
-    { name: t("categories"), href: "/categories", icon: Building2 },
-    { name: t("favorites"), href: "/favorites", icon: Heart },
+    { name: t("categories"), href: "/categories", icon: Grid2X2 },
+    { name: t("favorites"), href: "/favorites", icon: Star },
     user
-      ? { name:  t("profile"), href: "/profile", icon: User }
+      ? { name: t("profile"), href: "/profile", icon: User }
       : { name: tAuth("login_button"), href: "/login", icon: LogIn },
   ];
 
@@ -50,7 +41,6 @@ export default function BottomNavigation() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
-
           return (
             <Link
               key={item.href}

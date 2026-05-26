@@ -2,17 +2,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import type { PropertyType, TransactionType } from "@prisma/client";
+import type { CarType, TransactionType, FuelType, TransmissionType } from "@prisma/client";
 
 type UpdateBody = Partial<{
-  type: PropertyType;
+  type: CarType;
   transactionType: TransactionType;
   price: string | number;
   location: string;
   locationAr: string;
-  bedrooms: string | number | null;
-  bathrooms: string | number | null;
-  area: string | number;
+  brand: string;
+  carModel: string;
+  year: string | number;
+  mileage: string | number | null;
+  fuel: FuelType;
+  transmission: TransmissionType;
+  color: string;
   image: string;
   images: string[];
   featured: boolean;
@@ -28,19 +32,12 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-
-    const property = await (prisma.property as any).findUnique({
-      where: { id },
-    });
-
-    if (!property) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ property });
+    const car = await (prisma.car as any).findUnique({ where: { id } });
+    if (!car) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ car });
   } catch (error) {
-    console.error("GET /api/properties/[id] error:", error);
-    return NextResponse.json({ error: "Failed to fetch property" }, { status: 500 });
+    console.error("GET /api/cars/[id] error:", error);
+    return NextResponse.json({ error: "Failed to fetch car" }, { status: 500 });
   }
 }
 
@@ -51,21 +48,22 @@ export async function PUT(
   try {
     const session = await getSession();
     if (!session || session.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized. Admin role required." },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
     }
 
     const { id } = await params;
     const body = (await request.json()) as UpdateBody;
-
     const data: any = {};
 
     if (body.type) data.type = body.type;
     if (body.transactionType) data.transactionType = body.transactionType;
     if (body.location !== undefined) data.location = body.location;
     if (body.locationAr !== undefined) data.locationAr = body.locationAr;
+    if (body.brand !== undefined) data.brand = body.brand;
+    if (body.carModel !== undefined) data.carModel = body.carModel;
+    if (body.fuel) data.fuel = body.fuel;
+    if (body.transmission) data.transmission = body.transmission;
+    if (body.color !== undefined) data.color = body.color;
     if (body.image !== undefined) data.image = body.image;
     if (body.images !== undefined) data.images = Array.isArray(body.images) ? body.images : [];
     if (body.featured !== undefined) data.featured = !!body.featured;
@@ -73,29 +71,18 @@ export async function PUT(
     if (body.dossierType !== undefined) data.dossierType = body.dossierType;
     if (body.resource !== undefined) data.resource = body.resource;
     if (body.whatsapp !== undefined) data.whatsapp = body.whatsapp || null;
-
     if (body.price !== undefined) data.price = typeof body.price === "string" ? parseFloat(body.price) : body.price;
-    if (body.area !== undefined) data.area = typeof body.area === "string" ? parseFloat(body.area) : body.area;
-
-    if (body.bedrooms !== undefined) {
-      if (body.bedrooms === null || body.bedrooms === "" || Number.isNaN(Number(body.bedrooms))) data.bedrooms = null;
-      else data.bedrooms = typeof body.bedrooms === "string" ? parseInt(body.bedrooms, 10) : body.bedrooms;
+    if (body.year !== undefined) data.year = typeof body.year === "string" ? parseInt(body.year, 10) : body.year;
+    if (body.mileage !== undefined) {
+      if (body.mileage === null || body.mileage === "" || Number.isNaN(Number(body.mileage))) data.mileage = null;
+      else data.mileage = typeof body.mileage === "string" ? parseInt(body.mileage, 10) : body.mileage;
     }
 
-    if (body.bathrooms !== undefined) {
-      if (body.bathrooms === null || body.bathrooms === "" || Number.isNaN(Number(body.bathrooms))) data.bathrooms = null;
-      else data.bathrooms = typeof body.bathrooms === "string" ? parseInt(body.bathrooms, 10) : body.bathrooms;
-    }
-
-    const updated = await (prisma.property as any).update({
-      where: { id },
-      data: data as any,
-    });
-
-    return NextResponse.json({ message: "Property updated successfully", property: updated });
+    const updated = await (prisma.car as any).update({ where: { id }, data });
+    return NextResponse.json({ message: "Car updated successfully", car: updated });
   } catch (error: any) {
-    console.error("PUT /api/properties/[id] error:", error);
-    return NextResponse.json({ error: "Failed to update property" }, { status: 500 });
+    console.error("PUT /api/cars/[id] error:", error);
+    return NextResponse.json({ error: "Failed to update car" }, { status: 500 });
   }
 }
 
@@ -106,22 +93,13 @@ export async function DELETE(
   try {
     const session = await getSession();
     if (!session || session.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Unauthorized. Admin role required." },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
     }
-
     const { id } = await params;
-
-    await (prisma.property as any).delete({
-      where: { id },
-    });
-
-    return NextResponse.json({ message: "Property deleted successfully" });
+    await (prisma.car as any).delete({ where: { id } });
+    return NextResponse.json({ message: "Car deleted successfully" });
   } catch (error: any) {
-    console.error("DELETE /api/properties/[id] error:", error);
-    return NextResponse.json({ error: "Failed to delete property" }, { status: 500 });
+    console.error("DELETE /api/cars/[id] error:", error);
+    return NextResponse.json({ error: "Failed to delete car" }, { status: 500 });
   }
 }
-

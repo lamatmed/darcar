@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cairo } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import TopHeader from "@/components/layout/TopHeader";
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
+import SplashScreen from "@/components/layout/SplashScreen";
+import Footer from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,9 +18,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const cairo = Cairo({
+  variable: "--font-cairo",
+  subsets: ["arabic", "latin"],
+  weight: ["700", "800", "900"],
+});
+
 export const metadata: Metadata = {
-  title: "الشركة الموريتانية للتسويق - Marketing & Digital Solutions",
-  description: "Agence de marketing digital en Mauritanie - Solutions créatives et stratégiques pour votre entreprise.",
+  title: "داركار",
+  description: "داركار — Achat, vente et location de biens immobiliers et véhicules en Mauritanie.",
 };
 
 export const viewport: Viewport = {
@@ -38,11 +46,13 @@ export default async function RootLayout({
   return (
     <div
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
-      className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 pb-16 sm:pb-0 antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 pb-16 sm:pb-0 antialiased`}
     >
       <NextIntlClientProvider messages={messages}>
+        <SplashScreen />
         <TopHeader />
         <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+        <Footer />
         <BottomNavigation />
         <WhatsAppButton />
       </NextIntlClientProvider>

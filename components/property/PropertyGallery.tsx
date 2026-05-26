@@ -105,7 +105,8 @@ export default function PropertyGallery({ images, alt, type }: PropertyGalleryPr
             src={images[currentIndex]}
             alt={`${alt} - Image ${currentIndex + 1}`}
             fill
-            className="object-cover pointer-events-none"  // ✅ pointer-events-none pour que le clic aille sur le div parent
+            sizes="100vw"
+            className="object-cover pointer-events-none"
             priority={currentIndex === 0}
           />
         </motion.div>

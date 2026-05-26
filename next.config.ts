@@ -1,5 +1,6 @@
 import withSerwistInit from "@serwist/next";
 import createNextIntlPlugin from 'next-intl/plugin';
+import path from 'path';
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -11,7 +12,11 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: import("next").NextConfig = {
   /* config options here */
-  turbopack: {},
+  turbopack: {
+    resolveAlias: {
+      tailwindcss: path.resolve('./node_modules/tailwindcss'),
+    },
+  },
   images: {
     remotePatterns: [
       {

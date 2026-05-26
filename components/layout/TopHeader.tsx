@@ -1,12 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Globe, User, LogIn } from "lucide-react";
+import { Globe, User, LogIn, Home, LayoutGrid, Star } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+
+function NavLink({ href, icon, label, pathname }: { href: string; icon: React.ReactNode; label: string; pathname: string }) {
+  const isActive = pathname === href;
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+        isActive
+          ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold"
+          : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-white/5"
+      }`}
+    >
+      {icon}
+      {label}
+    </Link>
+  );
+}
 
 export default function TopHeader() {
   const t = useTranslations("Navigation");
@@ -51,37 +68,39 @@ export default function TopHeader() {
         <div className="flex items-center gap-2">
           <div className="relative w-10 h-10 overflow-hidden rounded-lg">
             <Image
-              src="/log.jpg"
+              src="/logo.png"
               alt="Logo"
               fill
               sizes="40px"
               className="object-cover"
             />
           </div>
-          <span className="font-bold text-sm sm:text-lg text-gray-900 dark:text-white line-clamp-1">
-            الشركة الموريتانية للتسويق
+          <span
+            className="text-sm sm:text-xl tracking-tight bg-linear-to-r from-blue-600 via-blue-500 to-orange-500 bg-clip-text text-transparent"
+            style={{ fontFamily: "var(--font-cairo)", fontWeight: 900 }}
+          >
+            داركار
           </span>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-            {t("home")}
-          </Link>
-          <Link href="/categories" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-            {t("categories")}
-          </Link>
-          <Link href="/favorites" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
-            {t("favorites")}
-          </Link>
-          
+        <nav className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+          <NavLink href="/" icon={<Home className="w-4 h-4" />} label={t("home")} pathname={pathname} />
+          <NavLink href="/categories" icon={<LayoutGrid className="w-4 h-4" />} label={t("categories")} pathname={pathname} />
+          <NavLink href="/favorites" icon={<Star className="w-4 h-4" />} label={t("favorites")} pathname={pathname} />
           {user ? (
-            <Link href="/profile" className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold transition-colors">
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-sm transition-colors hover:bg-blue-100 dark:hover:bg-blue-500/20"
+            >
               <User className="w-4 h-4" />
-              { t("profile")}
+              {t("profile")}
             </Link>
           ) : (
-            <Link href="/login" className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
+            <Link
+              href="/login"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium text-sm transition-colors"
+            >
               <LogIn className="w-4 h-4" />
               {tAuth("login_button")}
             </Link>
@@ -92,6 +111,7 @@ export default function TopHeader() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <button
+            type="button"
             onClick={toggleLanguage}
             className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
             aria-label="Toggle Language"
