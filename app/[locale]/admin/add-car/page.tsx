@@ -7,8 +7,9 @@ import { useRouter } from "@/i18n/routing";
 import { motion } from "framer-motion";
 import {
   Car, MapPin, Euro, Gauge, Loader2, Plus, CheckCircle,
-  Star, Trash2, Calendar, FileText, Globe, Image as ImageIcon, Phone,
+  Star, Trash2, Calendar, FileText, Globe, Image as ImageIcon,
 } from "lucide-react";
+import PhoneInput from "@/components/ui/PhoneInput";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 
@@ -42,7 +43,7 @@ export default function AddCarPage() {
     announcementDate: new Date().toISOString().split("T")[0],
     dossierType: "",
     resource: "",
-    whatsapp: "",
+    whatsapp: "+222",
   });
 
   const carTypes = [
@@ -386,14 +387,11 @@ export default function AddCarPage() {
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 ml-1">
                 {t("whatsapp")}
               </label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500 rtl:right-4 rtl:left-auto" />
-                <input type="tel" placeholder="Ex: 22247000000"
-                  className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-green-500 transition-all rtl:pr-12 rtl:pl-4"
-                  value={formData.whatsapp}
-                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                />
-              </div>
+              <PhoneInput
+                value={formData.whatsapp}
+                onChange={(v) => setFormData({ ...formData, whatsapp: v })}
+                inputClassName="py-4"
+              />
             </div>
 
             {/* Images */}

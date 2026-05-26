@@ -36,7 +36,7 @@ export default function LogoutButton({
   return (
     <div className="space-y-3">
       {success && (
-        <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 p-4 rounded-2xl text-sm font-bold border border-green-100 dark:border-green-800">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-2xl text-sm font-bold">
           {success}
         </div>
       )}
@@ -44,7 +44,7 @@ export default function LogoutButton({
         type="button"
         onClick={onLogout}
         disabled={loading || !!success}
-        className="w-full flex items-center justify-center p-5 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-3xl font-bold transition-all hover:bg-red-100 active:scale-[0.98] disabled:opacity-70"
+        className="w-full flex items-center justify-center gap-2 p-5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-3xl font-bold transition-all active:scale-[0.98] disabled:opacity-70"
       >
         {loading ? (
           <Loader2 className="w-5 h-5 me-2 animate-spin" />

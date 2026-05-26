@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Globe, User, LogIn, Home, LayoutGrid, Star } from "lucide-react";
+import { Globe, User, LogIn, Home, LayoutGrid, Star, PlusCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 function NavLink({ href, icon, label, pathname }: { href: string; icon: React.ReactNode; label: string; pathname: string }) {
@@ -88,6 +88,17 @@ export default function TopHeader() {
           <NavLink href="/" icon={<Home className="w-4 h-4" />} label={t("home")} pathname={pathname} />
           <NavLink href="/categories" icon={<LayoutGrid className="w-4 h-4" />} label={t("categories")} pathname={pathname} />
           <NavLink href="/favorites" icon={<Star className="w-4 h-4" />} label={t("favorites")} pathname={pathname} />
+          <Link
+            href="/sell"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+              pathname === "/sell" || pathname.startsWith("/sell/")
+                ? "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400"
+                : "bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/20"
+            }`}
+          >
+            <PlusCircle className="w-4 h-4" />
+            {t("publish")}
+          </Link>
           {user ? (
             <Link
               href="/profile"

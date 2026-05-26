@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { Home, Grid2X2, Star, User, LogIn } from "lucide-react";
+import { Home, Grid2X2, Star, User, LogIn, PlusCircle } from "lucide-react";
 
 export default function BottomNavigation() {
   const t = useTranslations("Navigation");
@@ -26,9 +26,10 @@ export default function BottomNavigation() {
     return () => { controller.abort(); window.removeEventListener("auth-changed", onAuthChanged); };
   }, [pathname]);
 
-  const navItems = [
+  const navItems: { name: string; href: string; icon: React.ElementType; highlight?: boolean }[] = [
     { name: t("home"), href: "/", icon: Home },
     { name: t("categories"), href: "/categories", icon: Grid2X2 },
+    { name: t("publish"), href: "/sell", icon: PlusCircle, highlight: true },
     { name: t("favorites"), href: "/favorites", icon: Star },
     user
       ? { name: t("profile"), href: "/profile", icon: User }
@@ -40,7 +41,21 @@ export default function BottomNavigation() {
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href === "/sell" && pathname.startsWith("/sell"));
+          if (item.highlight) {
+            return (
+              <Link key={item.href} href={item.href}
+                className="flex flex-col items-center justify-center w-full h-full gap-1 -mt-4"
+              >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all ${
+                  isActive ? "bg-orange-600 shadow-orange-500/30" : "bg-orange-500 shadow-orange-500/20"
+                }`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-[10px] font-semibold text-orange-500">{item.name}</span>
+              </Link>
+            );
+          }
           return (
             <Link
               key={item.href}

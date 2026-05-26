@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { motion } from "framer-motion";
-import { User, Phone, Lock, ArrowRight, Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { User, Lock, ArrowRight, Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import PhoneInput from "@/components/ui/PhoneInput";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 
@@ -17,7 +18,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ name: "", phone: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "+222", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,17 +135,13 @@ export default function SignupPage() {
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2 ms-1">
                 {t("phone")}
               </label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 rtl:left-auto rtl:right-4 pointer-events-none" />
-                <input
-                  type="text"
-                  required
-                  placeholder="xxxxxxxx"
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-white placeholder-gray-600 outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/40 transition-all text-sm rtl:pl-4 rtl:pr-11"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
+              <PhoneInput
+                value={formData.phone}
+                onChange={(v) => setFormData({ ...formData, phone: v })}
+                required
+                focusColor="blue"
+                inputClassName="py-3.5 text-sm"
+              />
             </div>
 
             {/* Password */}

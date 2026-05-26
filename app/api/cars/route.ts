@@ -20,15 +20,17 @@ function isValidTransmissionType(v: string): v is TransmissionType {
 export async function POST(request: Request) {
   try {
     const session = await getSession();
-    if (!session || session.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized. Must be logged in." }, { status: 401 });
     }
 
+    const isAdmin = session.role === "ADMIN";
     const body = await request.json();
     const {
       type, transactionType, price, location, locationAr,
       brand, carModel, year, mileage, fuel, transmission,
       color, image, images, featured, announcementDate, dossierType, resource, whatsapp,
+      paymentScreenshot,
     } = body;
 
     if (
@@ -60,9 +62,11 @@ export async function POST(request: Request) {
         images: Array.isArray(images) ? images : [],
         featured: Boolean(featured),
         announcementDate: announcementDate ? new Date(announcementDate) : undefined,
-        dossierType,
-        resource,
+        dossierType: isAdmin ? dossierType : undefined,
+        resource: isAdmin ? resource : undefined,
         whatsapp: whatsapp || undefined,
+        status: isAdmin ? "PUBLISHED" : "PENDING",
+        paymentScreenshot: !isAdmin ? (paymentScreenshot || undefined) : undefined,
         userId: session.id,
       },
     });
@@ -85,7 +89,17 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     const featuredParam = searchParams.get("featured");
+    const statusParam = searchParams.get("status");
+    const session = await getSession();
+    const isAdmin = session?.role === "ADMIN";
     const where: any = {};
+
+    // Always show only PUBLISHED unless admin explicitly passes ?status=
+    if (isAdmin && statusParam) {
+      where.status = statusParam;
+    } else {
+      where.status = "PUBLISHED";
+    }
 
     if (featuredParam === "true") {
       where.featured = true;

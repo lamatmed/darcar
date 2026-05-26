@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { LayoutDashboard, Building2, Users, Home, Building, Map, Landmark, Car } from "lucide-react";
+import { LayoutDashboard, Building2, Users, Home, Building, Map, Landmark, Car, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 
@@ -21,7 +21,7 @@ export default async function AdminDashboardPage({
     redirect(`/${locale}/`);
   }
 
-  const [totalProperties, totalUsers, propertyStats, totalCars, carStats] = await Promise.all([
+  const [totalProperties, totalUsers, propertyStats, totalCars, carStats, pendingCount] = await Promise.all([
     prisma.property.count(),
     prisma.user.count(),
     prisma.property.groupBy({
@@ -32,6 +32,10 @@ export default async function AdminDashboardPage({
     (prisma.car as any).groupBy({
       by: ['type', 'transactionType'],
       _count: { _all: true },
+    }),
+    (prisma.property as any).count({ where: { status: "PENDING" } }).then(async (pc: number) => {
+      const cc = await (prisma.car as any).count({ where: { status: "PENDING" } });
+      return pc + cc;
     }),
   ]);
 
@@ -93,6 +97,21 @@ export default async function AdminDashboardPage({
 
   return (
     <div className="container mx-auto px-4 py-10 pb-28 max-w-5xl">
+      {pendingCount > 0 && (
+        <Link href="/admin/pending"
+          className="flex items-center gap-3 mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl px-5 py-4 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all"
+        >
+          <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div className="flex-1">
+            <div className="font-extrabold text-amber-900 dark:text-amber-200">{t("pending_title")}</div>
+            <div className="text-sm text-amber-700 dark:text-amber-400">{pendingCount} {t("status_pending").toLowerCase()}</div>
+          </div>
+          <span className="text-amber-500 font-bold text-xl">→</span>
+        </Link>
+      )}
+
       <div className="flex items-center gap-3 mb-8">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
           <LayoutDashboard className="w-6 h-6" />

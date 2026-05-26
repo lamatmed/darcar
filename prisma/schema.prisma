@@ -57,6 +57,12 @@ enum TransactionType {
   FOR_RENT
 }
 
+enum ListingStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
 model Property {
   id              String          @id @default(cuid())
   type            PropertyType
@@ -75,12 +81,14 @@ model Property {
   
   // Nouveaux champs
  
-  announcementDate DateTime?
-  dossierType      String?
-  resource         String?
-  whatsapp         String?
+  announcementDate  DateTime?
+  dossierType       String?
+  resource          String?
+  whatsapp          String?
+  status            ListingStatus @default(PUBLISHED)
+  paymentScreenshot String?
 
-  // Admin Relation
+  // Relation
   userId      String
   author      User         @relation(fields: [userId], references: [id])
   @@index([type])
@@ -109,10 +117,12 @@ model Car {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  announcementDate DateTime?
-  dossierType      String?
-  resource         String?
-  whatsapp         String?
+  announcementDate  DateTime?
+  dossierType       String?
+  resource          String?
+  whatsapp          String?
+  status            ListingStatus @default(PUBLISHED)
+  paymentScreenshot String?
 
   userId  String
   author  User   @relation(fields: [userId], references: [id])
