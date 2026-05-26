@@ -23,6 +23,7 @@ export default function AddCarPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [rentalPeriod, setRentalPeriod] = useState<"MONTHLY" | "DAILY">("MONTHLY");
 
   const [formData, setFormData] = useState({
     type: "SEDAN",
@@ -93,7 +94,7 @@ export default function AddCarPage() {
       const res = await fetch("/api/cars", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, rentalPeriod: formData.transactionType === "FOR_RENT" ? rentalPeriod : undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Une erreur est survenue.");
@@ -183,6 +184,25 @@ export default function AddCarPage() {
                 ))}
               </div>
             </div>
+
+            {/* Rental Period */}
+            {formData.transactionType === "FOR_RENT" && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 ml-1">{t("rental_period")}</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["MONTHLY", "DAILY"] as const).map((p) => (
+                    <button key={p} type="button" onClick={() => setRentalPeriod(p)}
+                      className={`py-3 px-4 rounded-2xl text-sm font-bold transition-all border ${
+                        rentalPeriod === p
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-200"
+                          : "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-100 dark:border-gray-700 hover:bg-gray-100"
+                      }`}>
+                      {p === "MONTHLY" ? "Par mois / شهرياً" : "Par jour / يومياً"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Price */}
             <div>

@@ -139,8 +139,13 @@ export default function PropertyPage() {
                 }`}>
                   {c(property.transactionType as any)}
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight flex items-baseline gap-2 flex-wrap">
                   {formattedPrice} <span className="text-blue-600 text-xl">{t("price_suffix")}</span>
+                  {property.transactionType === "FOR_RENT" && (
+                    <span className="text-emerald-600 dark:text-emerald-400 text-lg font-bold">
+                      {(property as any).rentalPeriod === "DAILY" ? t("per_day") : t("per_month")}
+                    </span>
+                  )}
                 </h1>
               </div>
               <button type="button" onClick={toggle} className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors mt-8">

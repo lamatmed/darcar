@@ -63,6 +63,11 @@ enum ListingStatus {
   REJECTED
 }
 
+enum RentalPeriod {
+  DAILY
+  MONTHLY
+}
+
 model Property {
   id              String          @id @default(cuid())
   type            PropertyType
@@ -87,6 +92,7 @@ model Property {
   whatsapp          String?
   status            ListingStatus @default(PUBLISHED)
   paymentScreenshot String?
+  rentalPeriod      RentalPeriod?
 
   // Relation
   userId      String
@@ -123,6 +129,7 @@ model Car {
   whatsapp          String?
   status            ListingStatus @default(PUBLISHED)
   paymentScreenshot String?
+  rentalPeriod      RentalPeriod?
 
   userId  String
   author  User   @relation(fields: [userId], references: [id])

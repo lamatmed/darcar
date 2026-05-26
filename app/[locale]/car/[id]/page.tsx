@@ -116,8 +116,13 @@ export default function CarPage() {
                 }`}>
                   {c(car.transactionType as any)}
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight flex items-baseline gap-2 flex-wrap">
                   {formattedPrice} <span className="text-orange-500 text-xl">{t("price_suffix")}</span>
+                  {car.transactionType === "FOR_RENT" && (
+                    <span className="text-emerald-600 dark:text-emerald-400 text-lg font-bold">
+                      {(car as any).rentalPeriod === "DAILY" ? t("per_day") : t("per_month")}
+                    </span>
+                  )}
                 </h1>
                 <p className="text-xl font-bold text-gray-600 dark:text-gray-300 mt-1">
                   {car.brand} {car.carModel} — {car.year}

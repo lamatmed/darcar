@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { PropertyType, TransactionType } from "@prisma/client";
+import { PropertyType, TransactionType, RentalPeriod } from "@prisma/client";
 
 // ===================== HELPERS =====================
 function isValidPropertyType(value: string): value is PropertyType {
@@ -44,6 +44,7 @@ export async function POST(request: Request) {
       resource,
       whatsapp,
       paymentScreenshot,
+      rentalPeriod,
     } = body;
 
     // ✅ Validation forte
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
         dossierType: isAdmin ? dossierType : undefined,
         resource: isAdmin ? resource : undefined,
         whatsapp: whatsapp || undefined,
+        rentalPeriod: transactionType === "FOR_RENT" && Object.values(RentalPeriod).includes(rentalPeriod) ? rentalPeriod : undefined,
         status: isAdmin ? "PUBLISHED" : "PENDING",
         paymentScreenshot: !isAdmin ? (paymentScreenshot || undefined) : undefined,
         userId: session.id,
@@ -184,6 +186,7 @@ export async function GET(req: Request) {
         dossierType: true,
         resource: true,
         whatsapp: true,
+        rentalPeriod: true,
       } as any,
     });
 

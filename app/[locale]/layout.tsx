@@ -7,6 +7,7 @@ import BottomNavigation from "@/components/layout/BottomNavigation";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import SplashScreen from "@/components/layout/SplashScreen";
 import Footer from "@/components/layout/Footer";
+import PwaInstallBanner from "@/components/layout/PwaInstallBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,7 @@ export default async function RootLayout({
         <TopHeader />
         <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
         <Footer />
+        <PwaInstallBanner />
         <BottomNavigation />
         <WhatsAppButton />
       </NextIntlClientProvider>

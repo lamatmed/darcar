@@ -26,6 +26,7 @@ export default function EditMyCarPage() {
   const [fetching, setFetching] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [rentalPeriod, setRentalPeriod] = useState<"MONTHLY" | "DAILY">("MONTHLY");
 
   const [formData, setFormData] = useState({
     transactionType: "FOR_SALE",
@@ -66,6 +67,7 @@ export default function EditMyCarPage() {
             image: c.image ?? "",
             images: c.images ?? [],
           });
+          if (c.rentalPeriod) setRentalPeriod(c.rentalPeriod);
         }
       })
       .finally(() => setFetching(false));
@@ -91,7 +93,7 @@ export default function EditMyCarPage() {
       const res = await fetch(`/api/cars/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, rentalPeriod: formData.transactionType === "FOR_RENT" ? rentalPeriod : null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur.");
@@ -143,7 +145,7 @@ export default function EditMyCarPage() {
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="container mx-auto px-4 py-10 pb-32 max-w-2xl">
         <div className="flex items-center gap-3 mb-8">
-          <button onClick={() => router.back()} className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all">
+          <button type="button" onClick={() => router.back()} className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all">
             <ArrowLeft className="w-5 h-5 rtl:rotate-180" />
           </button>
           <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
@@ -173,6 +175,27 @@ export default function EditMyCarPage() {
                 ))}
               </div>
             </div>
+
+            {/* Rental Period */}
+            {formData.transactionType === "FOR_RENT" && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-400 mb-3">
+                  {locale === "ar" ? "فترة الإيجار" : "Période de location"}
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["MONTHLY", "DAILY"] as const).map((p) => (
+                    <button key={p} type="button" onClick={() => setRentalPeriod(p)}
+                      className={`py-3 rounded-2xl text-sm font-bold transition-all border ${
+                        rentalPeriod === p
+                          ? "bg-emerald-600 text-white border-emerald-600"
+                          : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+                      }`}>
+                      {p === "MONTHLY" ? (locale === "ar" ? "شهرياً" : "Par mois") : (locale === "ar" ? "يومياً" : "Par jour")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Brand + Model */}
             <div className="grid grid-cols-2 gap-4">

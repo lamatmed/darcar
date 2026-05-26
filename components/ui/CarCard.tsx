@@ -22,6 +22,7 @@ interface CarCardProps {
     fuel: string;
     image: string;
     featured?: boolean;
+    rentalPeriod?: string | null;
   };
 }
 
@@ -70,8 +71,13 @@ export default function CarCard({ car }: CarCardProps) {
         <div className="p-4">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white flex items-baseline gap-1.5 flex-wrap">
                 {formattedPrice} <span className="text-sm text-gray-500 font-normal">{t("price_suffix")}</span>
+                {car.transactionType === "FOR_RENT" && (
+                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    {car.rentalPeriod === "DAILY" ? t("per_day") : t("per_month")}
+                  </span>
+                )}
               </p>
               <p className="text-base font-bold text-gray-700 dark:text-gray-200 mt-0.5">
                 {car.brand} {car.carModel}

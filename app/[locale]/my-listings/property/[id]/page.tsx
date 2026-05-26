@@ -25,6 +25,7 @@ export default function EditMyPropertyPage() {
   const [fetching, setFetching] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [rentalPeriod, setRentalPeriod] = useState<"MONTHLY" | "DAILY">("MONTHLY");
 
   const [formData, setFormData] = useState({
     transactionType: "FOR_SALE",
@@ -57,6 +58,7 @@ export default function EditMyPropertyPage() {
             image: p.image ?? "",
             images: p.images ?? [],
           });
+          if (p.rentalPeriod) setRentalPeriod(p.rentalPeriod);
         }
       })
       .finally(() => setFetching(false));
@@ -82,7 +84,7 @@ export default function EditMyPropertyPage() {
       const res = await fetch(`/api/properties/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, rentalPeriod: formData.transactionType === "FOR_RENT" ? rentalPeriod : null }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur.");
@@ -154,6 +156,27 @@ export default function EditMyPropertyPage() {
                 ))}
               </div>
             </div>
+
+            {/* Rental Period */}
+            {formData.transactionType === "FOR_RENT" && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-400 mb-3">
+                  {locale === "ar" ? "فترة الإيجار" : "Période de location"}
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["MONTHLY", "DAILY"] as const).map((p) => (
+                    <button key={p} type="button" onClick={() => setRentalPeriod(p)}
+                      className={`py-3 rounded-2xl text-sm font-bold transition-all border ${
+                        rentalPeriod === p
+                          ? "bg-emerald-600 text-white border-emerald-600"
+                          : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+                      }`}>
+                      {p === "MONTHLY" ? (locale === "ar" ? "شهرياً" : "Par mois") : (locale === "ar" ? "يومياً" : "Par jour")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Price + Area */}
             <div className="grid grid-cols-2 gap-4">

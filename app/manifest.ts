@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "داركار",
     short_name: "داركار",
-    description: "Agence de marketing digital en Mauritanie - Solutions créatives et stratégiques pour votre entreprise.",
+    description: "داركار — Achat, vente et location de biens immobiliers et véhicules en Mauritanie.",
     start_url: "/",
     display: "standalone",
     background_color: "#001f3f",

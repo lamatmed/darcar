@@ -27,6 +27,7 @@ export default function SellCarPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [featured, setFeatured] = useState(false);
+  const [rentalPeriod, setRentalPeriod] = useState<"MONTHLY" | "DAILY">("MONTHLY");
 
   const [formData, setFormData] = useState({
     type: "SEDAN",
@@ -118,7 +119,7 @@ export default function SellCarPage() {
       const res = await fetch("/api/cars", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, featured }),
+        body: JSON.stringify({ ...formData, featured, rentalPeriod: formData.transactionType === "FOR_RENT" ? rentalPeriod : undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Une erreur est survenue.");
@@ -240,6 +241,29 @@ export default function SellCarPage() {
                 ))}
               </div>
             </div>
+
+            {/* Rental Period — shown only for FOR_RENT */}
+            {formData.transactionType === "FOR_RENT" && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-400 mb-3">
+                  {locale === "ar" ? "فترة الإيجار" : "Période de location"}
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["MONTHLY", "DAILY"] as const).map((p) => (
+                    <button key={p} type="button" onClick={() => setRentalPeriod(p)}
+                      className={`py-3 rounded-2xl text-sm font-bold transition-all border ${
+                        rentalPeriod === p
+                          ? "bg-emerald-600 text-white border-emerald-600"
+                          : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+                      }`}>
+                      {p === "MONTHLY"
+                        ? (locale === "ar" ? "شهرياً" : "Par mois")
+                        : (locale === "ar" ? "يومياً" : "Par jour")}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Brand + Model */}
             <div className="grid grid-cols-2 gap-4">

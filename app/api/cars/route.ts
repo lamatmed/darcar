@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { CarType, TransactionType, FuelType, TransmissionType } from "@prisma/client";
+import { CarType, TransactionType, FuelType, TransmissionType, RentalPeriod } from "@prisma/client";
 
 function isValidCarType(v: string): v is CarType {
   return Object.values(CarType).includes(v as CarType);
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       type, transactionType, price, location, locationAr,
       brand, carModel, year, mileage, fuel, transmission,
       color, image, images, featured, announcementDate, dossierType, resource, whatsapp,
-      paymentScreenshot,
+      paymentScreenshot, rentalPeriod,
     } = body;
 
     if (
@@ -65,6 +65,7 @@ export async function POST(request: Request) {
         dossierType: isAdmin ? dossierType : undefined,
         resource: isAdmin ? resource : undefined,
         whatsapp: whatsapp || undefined,
+        rentalPeriod: transactionType === "FOR_RENT" && Object.values(RentalPeriod).includes(rentalPeriod) ? rentalPeriod : undefined,
         status: isAdmin ? "PUBLISHED" : "PENDING",
         paymentScreenshot: !isAdmin ? (paymentScreenshot || undefined) : undefined,
         userId: session.id,
@@ -146,6 +147,7 @@ export async function GET(req: Request) {
         dossierType: true,
         resource: true,
         whatsapp: true,
+        rentalPeriod: true,
       },
     });
 

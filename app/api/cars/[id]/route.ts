@@ -62,6 +62,7 @@ export async function PUT(
     const data: any = {};
 
     if (body.transactionType) data.transactionType = body.transactionType;
+    if ((body as any).rentalPeriod !== undefined) data.rentalPeriod = (body as any).rentalPeriod || null;
     if (body.location !== undefined) data.location = body.location;
     if (body.locationAr !== undefined) data.locationAr = body.locationAr;
     if (body.brand !== undefined) data.brand = body.brand;

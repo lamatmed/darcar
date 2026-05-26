@@ -20,6 +20,7 @@ interface PropertyCardProps {
     area: number;
     image: string;
     featured?: boolean;
+    rentalPeriod?: string | null;
   };
 }
 
@@ -74,8 +75,13 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="p-4">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">
+              <p className="text-xl font-bold text-gray-900 dark:text-white flex items-baseline gap-1.5 flex-wrap">
                 {formattedPrice} <span className="text-sm text-gray-500 font-normal">{t("price_suffix")}</span>
+                {property.transactionType === "FOR_RENT" && (
+                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    {property.rentalPeriod === "DAILY" ? t("per_day") : t("per_month")}
+                  </span>
+                )}
               </p>
             </div>
             <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-semibold uppercase tracking-wider">
