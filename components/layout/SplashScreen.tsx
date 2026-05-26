@@ -32,16 +32,15 @@ export default function SplashScreen() {
             priority
           />
         </div>
-        <p className="text-white text-2xl font-extrabold tracking-wide">داركار</p>
-        {/* Loader dots */}
-        <div className="flex gap-2 mt-2">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className="w-2 h-2 bg-white/60 rounded-full animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            />
-          ))}
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-3xl font-black tracking-widest bg-linear-to-r from-blue-400 via-white to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
+            داركار
+          </p>
+          <p className="text-xs font-semibold tracking-[0.25em] text-white/40 uppercase">Dar-Cars.com</p>
+        </div>
+        {/* Loader bar */}
+        <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden mt-2">
+          <div className="h-full bg-linear-to-r from-blue-500 to-orange-400 rounded-full animate-[loader_1.6s_ease-in-out_forwards]" />
         </div>
       </div>
     </div>

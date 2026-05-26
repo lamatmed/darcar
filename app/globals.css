@@ -46,3 +46,9 @@ body {
 .animate-bounce-subtle {
   animation: bounce-subtle 2s infinite;
 }
+
+@keyframes loader {
+  0%   { width: 0%; opacity: 1; }
+  80%  { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}
