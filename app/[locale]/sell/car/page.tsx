@@ -25,7 +25,8 @@ export default function SellCarPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [copiedSedad, setCopiedSedad] = useState(false);
+  const [copiedBamis, setCopiedBamis] = useState(false);
   const [featured, setFeatured] = useState(false);
   const [rentalPeriod, setRentalPeriod] = useState<"MONTHLY" | "DAILY">("MONTHLY");
 
@@ -101,10 +102,16 @@ export default function SellCarPage() {
     }
   };
 
-  const copyNumber = () => {
-    navigator.clipboard.writeText("30572816");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copySedad = () => {
+    navigator.clipboard.writeText(t("payment_number"));
+    setCopiedSedad(true);
+    setTimeout(() => setCopiedSedad(false), 2000);
+  };
+
+  const copyBamis = () => {
+    navigator.clipboard.writeText(t("payment_number_bamis"));
+    setCopiedBamis(true);
+    setTimeout(() => setCopiedBamis(false), 2000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -444,17 +451,31 @@ export default function SellCarPage() {
               {featured ? t("payment_amount_featured") : t("payment_amount_standard")}
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs text-gray-500 mb-1">{locale === "ar" ? "رقم التحويل" : "Numéro de transfert"}</div>
-                <div className="text-2xl font-black text-white tracking-widest">{t("payment_number")}</div>
-                <div className="text-xs text-orange-400 font-semibold mt-1">Sedad • Bankily • Masrivi</div>
+            <div className="space-y-3">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">{locale === "ar" ? "رقم التحويل" : "Numéro de transfert"}</div>
+                  <div className="text-2xl font-black text-white tracking-widest">{t("payment_number")}</div>
+                  <div className="text-xs text-orange-400 font-semibold mt-1">Sedad</div>
+                </div>
+                <button type="button" onClick={copySedad}
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+                  {copiedSedad ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copiedSedad ? "Copié !" : "Copier"}
+                </button>
               </div>
-              <button type="button" onClick={copyNumber}
-                className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-semibold transition-all">
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                {copied ? "Copié !" : "Copier"}
-              </button>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">{locale === "ar" ? "رقم التحويل" : "Numéro de transfert"}</div>
+                  <div className="text-2xl font-black text-white tracking-widest">{t("payment_number_bamis")}</div>
+                  <div className="text-xs text-orange-400 font-semibold mt-1">Bamis Digital</div>
+                </div>
+                <button type="button" onClick={copyBamis}
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+                  {copiedBamis ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copiedBamis ? "Copié !" : "Copier"}
+                </button>
+              </div>
             </div>
 
             <div>

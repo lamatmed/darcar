@@ -171,14 +171,15 @@
     "description_placeholder": "صف عقارك: الحالة، المرافق، المميزات...",
     "pricing_title": "اختر عرضك",
     "plan_standard_label": "إعلان عادي",
-    "plan_standard_price": "500 MRU",
+    "plan_standard_price": "100 MRU",
     "plan_standard_desc": "يظهر في نتائج البحث العادية",
     "plan_featured_label": "في الصدارة",
-    "plan_featured_price": "700 MRU",
+    "plan_featured_price": "150 MRU",
     "plan_featured_desc": "يظهر في المقدمة ويبرز أمام الجميع ⭐",
     "selected_plan": "العرض المختار",
-    "payment_amount_standard": "أرسل 500 MRU بالضبط",
-    "payment_amount_featured": "أرسل 700 MRU بالضبط"
+    "payment_amount_standard": "أرسل 100 MRU بالضبط",
+    "payment_amount_featured": "أرسل 150 MRU بالضبط",
+    "payment_number_bamis": "30402864"
   },
   "Admin": {
     "dashboard_title": "لوحة تحكم المدير",

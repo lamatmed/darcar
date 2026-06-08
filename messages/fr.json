@@ -171,14 +171,15 @@
     "description_placeholder": "Décrivez votre bien : état, équipements, avantages...",
     "pricing_title": "Choisissez votre offre",
     "plan_standard_label": "Annonce standard",
-    "plan_standard_price": "500 MRU",
+    "plan_standard_price": "100 MRU",
     "plan_standard_desc": "Visible dans les résultats normaux",
     "plan_featured_label": "À la une",
-    "plan_featured_price": "700 MRU",
+    "plan_featured_price": "150 MRU",
     "plan_featured_desc": "Mis en avant en haut des résultats ⭐",
     "selected_plan": "Offre sélectionnée",
-    "payment_amount_standard": "Envoyez exactement 500 MRU",
-    "payment_amount_featured": "Envoyez exactement 700 MRU"
+    "payment_amount_standard": "Envoyez exactement 100 MRU",
+    "payment_amount_featured": "Envoyez exactement 150 MRU",
+    "payment_number_bamis": "30402864"
   },
   "Admin": {
     "dashboard_title": "Dashboard Admin",
