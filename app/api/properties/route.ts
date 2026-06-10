@@ -89,6 +89,19 @@ export async function POST(request: Request) {
       } as any,
     });
 
+    if (!isAdmin) {
+      await (prisma as any).notification.create({
+        data: {
+          userId: session.id,
+          type: "PENDING",
+          listingType: "property",
+          listingId: property.id,
+          titleFr: `Votre bien à "${property.location}" est en attente de validation`,
+          titleAr: `عقارك في "${property.locationAr}" في انتظار المراجعة`,
+        },
+      });
+    }
+
     return NextResponse.json(
       { message: "Property created successfully", property },
       { status: 201 }

@@ -112,9 +112,34 @@ export async function PATCH(
     if (!["PUBLISHED", "REJECTED", "PENDING"].includes(status)) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
+
+    const existing = await (prisma.car as any).findUnique({
+      where: { id },
+      select: { userId: true, brand: true, carModel: true, status: true },
+    });
+
     const data: any = { status };
     if (featured !== undefined) data.featured = Boolean(featured);
     const updated = await (prisma.car as any).update({ where: { id }, data });
+
+    if (existing && existing.status !== status && (status === "PUBLISHED" || status === "REJECTED")) {
+      const isPub = status === "PUBLISHED";
+      await (prisma as any).notification.create({
+        data: {
+          userId: existing.userId,
+          type: status,
+          listingType: "car",
+          listingId: id,
+          titleFr: isPub
+            ? `Votre véhicule "${existing.brand} ${existing.carModel}" a été publié ✅`
+            : `Votre véhicule "${existing.brand} ${existing.carModel}" a été rejeté`,
+          titleAr: isPub
+            ? `تم نشر سيارتك "${existing.brand} ${existing.carModel}" ✅`
+            : `تم رفض سيارتك "${existing.brand} ${existing.carModel}"`,
+        },
+      });
+    }
+
     return NextResponse.json({ car: updated });
   } catch (error) {
     console.error("PATCH /api/cars/[id] error:", error);

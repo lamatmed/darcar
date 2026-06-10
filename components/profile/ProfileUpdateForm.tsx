@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, X } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 
 export default function ProfileUpdateForm({
@@ -29,28 +29,20 @@ export default function ProfileUpdateForm({
     setLoading(true);
     setError("");
     setSuccess("");
-
     try {
       const res = await fetch("/api/users/me", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          password: password || undefined,
-        }),
+        body: JSON.stringify({ name, phone, password: password || undefined }),
       });
-
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || t("update_failed"));
-
       setSuccess(t("update_success"));
       setPassword("");
       setTimeout(() => {
-        // Remove `?tab=info` to close the edit form.
         router.replace("/profile");
         router.refresh();
-      }, 500);
+      }, 600);
     } catch (e: any) {
       setError(e?.message || t("update_failed"));
     } finally {
@@ -58,83 +50,88 @@ export default function ProfileUpdateForm({
     }
   };
 
-  return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-8 space-y-4"
-    >
-      <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">
-        {t("edit_profile")}
-      </h3>
+  const inputClass =
+    "w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600";
 
-      {error ? (
-        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-2xl text-sm font-semibold border border-red-100 dark:border-red-800">
+  const labelClass = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2";
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">
+          {t("edit_profile")}
+        </h3>
+        <button
+          type="button"
+          onClick={() => router.replace("/profile")}
+          className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 p-3 rounded-2xl text-sm font-medium border border-red-100 dark:border-red-500/20">
           {error}
         </div>
-      ) : null}
-      {success ? (
-        <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 p-3 rounded-2xl text-sm font-semibold border border-green-100 dark:border-green-800">
+      )}
+      {success && (
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 p-3 rounded-2xl text-sm font-medium border border-emerald-100 dark:border-emerald-500/20">
           {success}
         </div>
-      ) : null}
+      )}
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-          {tAuth("name")}
-        </label>
+        <label className={labelClass}>{tAuth("name")}</label>
         <input
           type="text"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 px-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className={inputClass}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-          {tAuth("phone")}
-        </label>
+        <label className={labelClass}>{tAuth("phone")}</label>
         <input
           type="text"
           required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 px-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className={inputClass}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-          {t("new_password")}
-        </label>
+        <label className={labelClass}>{t("new_password")}</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder={t("new_password_placeholder")}
-          className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl py-3 px-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className={inputClass}
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold disabled:opacity-70"
-      >
-        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-        {t("save_profile")}
-      </button>
-
-      <button
-        type="button"
-        onClick={() => router.replace("/profile")}
-        disabled={loading}
-        className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold disabled:opacity-70"
-      >
-        {t("cancel_profile")}
-      </button>
+      <div className="flex gap-3 pt-1">
+        <button
+          type="button"
+          onClick={() => router.replace("/profile")}
+          disabled={loading}
+          className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all disabled:opacity-60"
+        >
+          {t("cancel_profile")}
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all disabled:opacity-60 shadow-sm shadow-blue-500/20"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {t("save_profile")}
+        </button>
+      </div>
     </form>
   );
 }
-

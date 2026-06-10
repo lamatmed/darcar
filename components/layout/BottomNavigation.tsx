@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { Home, Grid2X2, Star, User, LogIn, PlusCircle } from "lucide-react";
@@ -11,20 +11,39 @@ export default function BottomNavigation() {
   const tAuth = useTranslations("Auth");
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
+  const [badgeCount, setBadgeCount] = useState(0);
+
+  const fetchBadge = useCallback(async (role?: string) => {
+    try {
+      const res = await fetch("/api/notifications", { cache: "no-store" });
+      if (!res.ok) return;
+      const d = await res.json();
+      setBadgeCount(role === "ADMIN" ? d.pendingCount : d.unreadCount);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
     const fetchUser = () => {
       fetch("/api/auth/me", { cache: "no-store", signal: controller.signal })
         .then((res) => res.json())
-        .then((data) => setUser(data.user || null))
+        .then((data) => {
+          setUser(data.user || null);
+          if (data.user) fetchBadge(data.user.role);
+          else setBadgeCount(0);
+        })
         .catch((err) => { if (err?.name !== "AbortError") setUser(null); });
     };
     fetchUser();
     const onAuthChanged = () => fetchUser();
     window.addEventListener("auth-changed", onAuthChanged);
-    return () => { controller.abort(); window.removeEventListener("auth-changed", onAuthChanged); };
-  }, [pathname]);
+    const interval = setInterval(() => { if (user) fetchBadge(user?.role); }, 30_000);
+    return () => {
+      controller.abort();
+      window.removeEventListener("auth-changed", onAuthChanged);
+      clearInterval(interval);
+    };
+  }, [pathname, fetchBadge, user]);
 
   const navItems: { name: string; href: string; icon: React.ElementType; highlight?: boolean }[] = [
     { name: t("home"), href: "/", icon: Home },
@@ -56,6 +75,7 @@ export default function BottomNavigation() {
               </Link>
             );
           }
+          const showBadge = item.href === "/profile" && badgeCount > 0;
           return (
             <Link
               key={item.href}
@@ -66,7 +86,16 @@ export default function BottomNavigation() {
                   : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
-              <Icon className={`w-6 h-6 ${isActive ? "fill-current" : ""}`} />
+              <div className="relative">
+                <Icon className={`w-6 h-6 ${isActive ? "fill-current" : ""}`} />
+                {showBadge && (
+                  <span className={`absolute -top-1 -right-1.5 min-w-[16px] h-[16px] rounded-full text-[9px] font-black text-white flex items-center justify-center px-0.5 leading-none ${
+                    user?.role === "ADMIN" ? "bg-orange-500" : "bg-blue-500"
+                  }`}>
+                    {badgeCount > 99 ? "99+" : badgeCount}
+                  </span>
+                )}
+              </div>
               <span className="text-[10px] font-medium">{item.name}</span>
             </Link>
           );

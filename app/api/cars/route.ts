@@ -72,6 +72,19 @@ export async function POST(request: Request) {
       },
     });
 
+    if (!isAdmin) {
+      await (prisma as any).notification.create({
+        data: {
+          userId: session.id,
+          type: "PENDING",
+          listingType: "car",
+          listingId: car.id,
+          titleFr: `Votre véhicule "${car.brand} ${car.carModel}" est en attente de validation`,
+          titleAr: `سيارتك "${car.brand} ${car.carModel}" في انتظار المراجعة`,
+        },
+      });
+    }
+
     return NextResponse.json({ message: "Car created successfully", car }, { status: 201 });
   } catch (error) {
     console.error("Create car error:", error);

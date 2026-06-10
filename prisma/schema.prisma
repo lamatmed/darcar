@@ -14,13 +14,30 @@ enum Role {
 }
 
 model User {
-  id         String     @id @default(cuid())
-  phone      String     @unique
-  name       String
-  password   String
-  role       Role       @default(USER)
-  properties Property[]
-  cars       Car[]
+  id            String         @id @default(cuid())
+  phone         String         @unique
+  name          String
+  password      String
+  role          Role           @default(USER)
+  properties    Property[]
+  cars          Car[]
+  notifications Notification[]
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "PENDING" | "PUBLISHED" | "REJECTED"
+  listingType String   // "car" | "property"
+  listingId   String
+  titleFr     String
+  titleAr     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, read])
 }
 
 enum PropertyType {
