@@ -1,7 +1,7 @@
 {
   "Navigation": {
     "home": "Accueil",
-    "categories": "Agences",
+    "categories": "Catégories",
     "real_estate": "Immobilier",
     "cars": "Voitures",
     "favorites": "À la Une",
@@ -34,7 +34,8 @@
     "buildings": "Immeubles",
     "listings": "annonces",
     "FOR_SALE": "À vendre",
-    "FOR_RENT": "À louer"
+    "FOR_RENT": "À louer",
+    "empty": "Aucune annonce dans cette catégorie."
   },
   "Favorites": {
     "empty_title": "Aucun favori",

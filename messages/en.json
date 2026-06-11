@@ -1,7 +1,7 @@
 {
   "Navigation": {
     "home": "Home",
-    "categories": "Agencies",
+    "categories": "Categories",
     "real_estate": "Real Estate",
     "cars": "Cars",
     "favorites": "Featured",
@@ -34,7 +34,8 @@
     "buildings": "Buildings",
     "listings": "listings",
     "FOR_SALE": "For sale",
-    "FOR_RENT": "For rent"
+    "FOR_RENT": "For rent",
+    "empty": "No listings in this category."
   },
   "Favorites": {
     "empty_title": "No favorites",

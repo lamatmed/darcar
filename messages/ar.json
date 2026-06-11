@@ -1,7 +1,7 @@
 {
   "Navigation": {
     "home": "الرئيسية",
-    "categories": "الوكالات",
+    "categories": "الفئات",
     "real_estate": "عقارات",
     "cars": "سيارات",
     "favorites": "المميزة",
@@ -34,7 +34,8 @@
     "buildings": "عمارات",
     "listings": "إعلانات",
     "FOR_SALE": "للبيع",
-    "FOR_RENT": "للإيجار"
+    "FOR_RENT": "للإيجار",
+    "empty": "لا توجد إعلانات في هذه الفئة."
   },
   "Favorites": {
     "empty_title": "لا توجد مفضلات",
