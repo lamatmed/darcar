@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Globe, User, LogIn, PlusCircle, Home, Building2, Star, LogOut } from "lucide-react";
+import { User, LogIn, PlusCircle, Home, Building2, Star, LogOut, ChevronDown } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import NotificationBell from "./NotificationBell";
 import type { LucideIcon } from "lucide-react";
+
+const LOCALES = [
+  { code: "ar", flag: "🇲🇷", label: "عربية" },
+  { code: "fr", flag: "🇫🇷", label: "FR" },
+  { code: "en", flag: "🇬🇧", label: "EN" },
+] as const;
 
 function NavLink({ href, label, pathname, icon: Icon }: { href: string; label: string; pathname: string; icon?: LucideIcon }) {
   const isActive = pathname === href;
@@ -34,6 +40,16 @@ export default function TopHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onClickOutside = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -47,9 +63,6 @@ export default function TopHeader() {
     window.addEventListener("auth-changed", fetchUser);
     return () => { controller.abort(); window.removeEventListener("auth-changed", fetchUser); };
   }, [pathname]);
-
-  const toggleLanguage = () =>
-    router.replace(pathname, { locale: locale === "ar" ? "fr" : "ar" });
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -126,15 +139,37 @@ export default function TopHeader() {
         <div className="flex items-center gap-1">
           {user && <NotificationBell role={user.role} />}
           <ThemeToggle />
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide"
-            aria-label="Toggle Language"
-          >
-            <Globe className="w-4 h-4" />
-            <span>{locale === "ar" ? "FR" : "ع"}</span>
-          </button>
+          <div ref={langRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setLangOpen((o) => !o)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-xs font-bold text-gray-600 dark:text-gray-300"
+              aria-label="Change language"
+            >
+              <span className="text-base leading-none">{LOCALES.find((l) => l.code === locale)?.flag}</span>
+              <span className="uppercase tracking-wide">{LOCALES.find((l) => l.code === locale)?.label}</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${langOpen ? "rotate-180" : ""}`} />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 mt-1 w-32 rounded-xl border border-gray-100 dark:border-white/10 bg-white dark:bg-gray-900 shadow-lg shadow-black/10 py-1 z-50">
+                {LOCALES.map(({ code, flag, label }) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => { router.replace(pathname, { locale: code }); setLangOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
+                      locale === code
+                        ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 font-semibold"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5"
+                    }`}
+                  >
+                    <span className="text-base">{flag}</span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
       </div>
